@@ -113,11 +113,56 @@ class TestTextNode(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is text with a ", TextType.TEXT),
-                TextType("link to Boot.dev", TextType.LINK, "https://www.boot.dev"),
-            ]
+                TextNode("link to Boot.dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(".", TextType.TEXT),
+            ],
+            new_nodes,
         )
 
+    def test_multiple_links(self):
+        node = TextNode(
+                    "Check out [Google](https://www.google.com) and also [DuckDuckGo](https://duckduckgo.com) for search.",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Check out ", TextType.TEXT),
+                TextNode("Google", TextType.LINK, "https://www.google.com"),
+                TextNode(" and also ", TextType.TEXT),
+                TextNode("DuckDuckGo", TextType.LINK, "https://duckduckgo.com"),
+                TextNode(" for search.", TextType.TEXT),
+            ],
+            new_nodes,
+        )    
+    def test_no_links(self):
+        node = TextNode(
+                    "Plain text with no links.",
+                TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Plain text with no links.", TextType.TEXT),
+            ],
+            new_nodes,
+        )    
 
+    def test_link_at_end_and_begin(self):
+        node = TextNode(
+                "[Start Link](https://start.com) text in middle [End Link](https://end.com)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Start Link", TextType.LINK, "https://start.com"),
+                TextNode(" text in middle ", TextType.TEXT),
+                TextNode("End Link", TextType.LINK, "https://end.com"),
+                
+            ],
+            new_nodes,
+        )    
 
 if __name__ == "__main__":
     unittest.main()

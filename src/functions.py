@@ -76,14 +76,14 @@ def split_nodes_link(old_nodes):
             continue
         for i in range(0, len(matches)):
             
-            alt_text = matches[i][0]
+            link_text = matches[i][0]
             url_text = matches[i][1]
-            textpart = current_text.split(f"[{alt_text}]({url_text})", 1)
-
+            textpart = current_text.split(f"[{link_text}]({url_text})", 1)
+            
             if not textpart[0] == "":
                 new_nodes.append(TextNode(textpart[0], TextType.TEXT))
                 
-            new_nodes.append(TextNode(alt_text, TextType.LINK, url_text))
+            new_nodes.append(TextNode(link_text, TextType.LINK, url_text))
             current_text = textpart[1]
         if not current_text == "":
             new_nodes.append(TextNode(current_text, TextType.TEXT))
