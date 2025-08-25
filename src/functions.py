@@ -31,7 +31,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             raise Exception("Error: Invalid number of delimiters")
         for i in range(0, len(split_text)):
             if i % 2 == 0:
-                new_nodes.append(TextNode(split_text[i], TextType.TEXT))
+                if not split_text[i] == "":
+                    new_nodes.append(TextNode(split_text[i], TextType.TEXT))
             elif i % 2 == 1:
                 new_nodes.append(TextNode(split_text[i], text_type))
     return new_nodes
@@ -69,6 +70,10 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     new_nodes = []
     for node in old_nodes:
+        #print(node.text_type)
+        if node.text_type!=TextType.TEXT:
+            new_nodes.append(node)
+            continue
         current_text = node.text
         matches = extract_markdown_links(node.text)
         if not matches:
@@ -88,3 +93,16 @@ def split_nodes_link(old_nodes):
         if not current_text == "":
             new_nodes.append(TextNode(current_text, TextType.TEXT))
     return new_nodes
+
+def text_to_textnodes(text):
+    
+    node = TextNode(text, TextType.TEXT)
+    modified = split_nodes_delimiter([node], "**", TextType.BOLD)
+    modified = split_nodes_delimiter(modified, "_", TextType.ITALIC)
+    modified = split_nodes_delimiter(modified, "`", TextType.CODE)
+    modified = split_nodes_image(modified)
+    modified = split_nodes_link(modified)    
+    return modified
+
+def markdown_to_blocks(markdown):
+    print(markdown)

@@ -163,6 +163,75 @@ class TestTextNode(unittest.TestCase):
             ],
             new_nodes,
         )    
+    def test_text_to_nodes(self):
+        node = TextNode(
+            "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)",
+            TextType.TEXT,)
+        new_nodes = text_to_textnodes(node.text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                    TextNode("This is ", TextType.TEXT),
+                    TextNode("text", TextType.BOLD),
+                    TextNode(" with an ", TextType.TEXT),
+                    TextNode("italic", TextType.ITALIC),
+                    TextNode(" word and a ", TextType.TEXT),
+                    TextNode("code block", TextType.CODE),
+                    TextNode(" and an ", TextType.TEXT),
+                    TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                    TextNode(" and a ", TextType.TEXT),
+                    TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            
+        )
+    def test_no_markdown(self):
+        nodes = text_to_textnodes("just plain text here!")
+        assert len(nodes) == 1
+        assert nodes[0].text == "just plain text here!"
+        assert nodes[0].text_type == TextType.TEXT
+        assert nodes[0].url is None
+
+    def test_multi_bold_and_ita(self):
+        node = TextNode("**this** **text** **is** _very_ _itaboldic_", TextType.TEXT)
+        new_nodes = text_to_textnodes(node.text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                    TextNode("this", TextType.BOLD),
+                    TextNode(" ", TextType.TEXT),
+                    TextNode("text", TextType.BOLD),
+                    TextNode(" ", TextType.TEXT),
+                    TextNode("is", TextType.BOLD),
+                    TextNode(" ", TextType.TEXT),
+                    TextNode("very", TextType.ITALIC),
+                    TextNode(" ", TextType.TEXT),
+                    TextNode("itaboldic", TextType.ITALIC),
+
+            ],
+            
+        )
+
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+
 
 if __name__ == "__main__":
     unittest.main()
