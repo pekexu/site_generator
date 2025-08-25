@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
+from blocktype import BlockType
 from functions import *
 
 class TestTextNode(unittest.TestCase):
@@ -268,7 +269,48 @@ Second block.
         expected = []
         self.assertEqual(markdown_to_blocks(md), expected)
 
+    def test_heading_type(self):
+        md = "### Heading"
+        expected = BlockType.HEADING
+        self.assertEqual(block_to_block_type(md), expected)
 
+    def test_code_type(self):
+        md = "``` Code wrong"
+        expected = BlockType.PARAGRAPH
+        self.assertEqual(block_to_block_type(md), expected)
+
+    def test_right_code(self):
+        md = "```code right```"
+        expected = BlockType.CODE
+        self.assertEqual(block_to_block_type(md), expected)
+    
+    def test_quote_block(self):
+        md = """>This is **bolded** paragraph
+>This is second line
+>This is third line of quote"""
+        expected = BlockType.QUOTE
+        self.assertEqual(block_to_block_type(md), expected)
+
+    def test_unordered_list_block(self):
+        md = """-This is **bolded** paragraph
+-This is second line
+-This is third line of quote"""
+        expected = BlockType.UNORDERED_LIST
+        self.assertEqual(block_to_block_type(md), expected)
+
+    def test_ordered_block_list_block(self):
+        md = """. 1 This is **bolded** paragraph
+. 2 This is second line
+. 3 This is third line of quote"""
+        expected = BlockType.ORDERED_LIST
+        self.assertEqual(block_to_block_type(md), expected)
+
+    def test_ordered_false_block(self):
+        md = """.  This is **bolded** paragraph
+. 2 This is second line
+. 3 This is third line of quote"""
+        expected = BlockType.PARAGRAPH
+        self.assertEqual(block_to_block_type(md), expected)
 
 if __name__ == "__main__":
     unittest.main()

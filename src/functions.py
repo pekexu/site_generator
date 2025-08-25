@@ -1,5 +1,6 @@
 from htmlnode import *
 from textnode import *
+from blocktype import BlockType
 import re
 
 def text_node_to_html_node(text_node):
@@ -112,4 +113,35 @@ def markdown_to_blocks(markdown):
         if not block == "":
             new_list.append(block)
     return new_list
-    
+
+def block_to_block_type(markdown):
+    if markdown.startswith("#"):
+        return BlockType.HEADING
+    elif markdown.startswith("```") and markdown.endswith("```"):
+        return BlockType.CODE
+    elif markdown.startswith(">"):
+        for mark in markdown.split("\n"):
+            if not mark.startswith(">"):
+                return BlockType.PARAGRAPH
+            else:
+                return BlockType.QUOTE
+    elif markdown.startswith("-"):
+        for mark in markdown.split("\n"):
+            if not mark.startswith("-"):
+                return BlockType.PARAGRAPH
+            else:
+                return BlockType.UNORDERED_LIST
+            
+    elif markdown.startswith("."):
+        i=1
+        for mark in markdown.split("\n"):
+            
+            if not mark.startswith(f". {i}"):
+                return BlockType.PARAGRAPH
+            else:
+                ol_bool = True
+            i+=1
+        if ol_bool == True:
+            return BlockType.ORDERED_LIST
+    else:    
+        return BlockType.PARAGRAPH
