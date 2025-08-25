@@ -105,4 +105,11 @@ def text_to_textnodes(text):
     return modified
 
 def markdown_to_blocks(markdown):
-    print(markdown)
+    new_list = []
+    blocks = re.split(r'\n\s*\n', markdown)
+    for block in blocks:
+        block = block.strip("\n").lstrip().rstrip()
+        if not block == "":
+            new_list.append(block)
+    return new_list
+    

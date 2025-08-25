@@ -230,6 +230,43 @@ This is the same paragraph on a new line
                 "- This is a list\n- with items",
             ],
         )
+    def test_two_blocks(self):
+        md = """
+First block.
+
+Second block.
+"""
+        expected = [
+        "First block.",
+        "Second block."
+        ]
+        self.assertEqual(markdown_to_blocks(md), expected)
+
+    def test_leading_and_trailing_whitespace(self):
+        md = """
+
+        First block with leading whitespace.
+    
+        Second block after lots of space.  
+    
+"""
+        expected = ["First block with leading whitespace.", "Second block after lots of space."]
+        self.assertEqual(expected, markdown_to_blocks(md))
+
+    def test_excessive_blank_lines(self):
+        md = "Block one.\n\n\n\nBlock two."
+        expected = ["Block one.", "Block two."]
+        self.assertEqual(markdown_to_blocks(md), expected)
+
+    def test_single_block(self):
+        md = "Only one block"
+        expected = ["Only one block"]
+        self.assertEqual(markdown_to_blocks(md), expected)
+
+    def test_empty_string(self):
+        md = ""
+        expected = []
+        self.assertEqual(markdown_to_blocks(md), expected)
 
 
 
