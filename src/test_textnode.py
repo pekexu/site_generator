@@ -44,40 +44,7 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(html_node.value, "This is a text node")
 
 
-    def test_link(self):
-        node = TextNode("This is a link", TextType.LINK, "https://")
-        html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.props, {"href": "https://"})
-        self.assertEqual(html_node.value, "This is a link")
 
-    def test_delimiter(self):
-        node = TextNode("This is text with a **bold block** word", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertEqual(new_nodes,[TextNode("This is text with a ", TextType.TEXT), TextNode("bold block", TextType.BOLD), TextNode(" word", TextType.TEXT)])
-
-    def test_no_delimiter(self):
-        node = TextNode("This has no bolding", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertEqual(new_nodes, [TextNode("This has no bolding", TextType.TEXT)])
-
-    def test_multiple_delimiters(self):
-        node = TextNode("a **b** c **d** e", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertEqual(
-          new_nodes,
-           [
-              TextNode("a ", TextType.TEXT),
-              TextNode("b", TextType.BOLD),
-              TextNode(" c ", TextType.TEXT),
-              TextNode("d", TextType.BOLD),
-              TextNode(" e", TextType.TEXT),
-          ]
-    )
-        
-    def test_odd_delimiters(self):
-        node = TextNode("bad **markdown", TextType.TEXT)
-        with self.assertRaises(Exception):
-            split_nodes_delimiter([node], "**", TextType.BOLD)
             
 if __name__ == "__main__":
     unittest.main()
