@@ -12,7 +12,7 @@ class TestTextNode(unittest.TestCase):
         }
         node = HTMLNode(None, None, None, props)
         self.assertEqual(node.props_to_html(), " href=\"https://www.google.com\" target=\"_blank\"")
-       
+        
     def test_eq2(self):
         props = {
             "bgcolor": "white",

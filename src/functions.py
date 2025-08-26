@@ -132,11 +132,11 @@ def block_to_block_type(markdown):
             else:
                 return BlockType.UNORDERED_LIST
             
-    elif markdown.startswith("."):
+    elif markdown.startswith("1."):
         i=1
         for mark in markdown.split("\n"):
             
-            if not mark.startswith(f". {i}"):
+            if not mark.startswith(f"{i}."):
                 return BlockType.PARAGRAPH
             else:
                 ol_bool = True
@@ -145,3 +145,77 @@ def block_to_block_type(markdown):
             return BlockType.ORDERED_LIST
     else:    
         return BlockType.PARAGRAPH
+    
+def markdown_to_html_node(markdown):
+    newblock_list = []
+    blocks = markdown_to_blocks(markdown)
+    
+    for block in blocks:
+        
+        current_type = block_to_block_type(block)
+        #create children because match case
+        if not current_type == BlockType.CODE:
+            children = text_to_children(block)
+        
+        match current_type:
+            case BlockType.PARAGRAPH:
+                lines = block.split("\n")
+                paragraph_text = " ".join(lines)
+                children = text_to_children(paragraph_text)
+                NewBlock = ParentNode("p", children)
+            case BlockType.HEADING:
+                heading = heading_to_html(block)
+                children = text_to_children(block[heading + 1:])
+                NewBlock = ParentNode(f"h{heading}", children)
+            case BlockType.CODE:
+                child = TextNode(block.lstrip("```\n").rstrip("```"), TextType.CODE)
+                children = text_node_to_html_node(child)
+                NewBlock = ParentNode("pre", [children])
+            case BlockType.QUOTE:
+                lines = block.split("\n")
+                temp = []
+                for line in lines:
+                    temp.append(line.lstrip("> "))     
+                paragraph_text = " ".join(temp)
+                children = text_to_children(paragraph_text)
+                NewBlock = ParentNode("blockquote", children)
+            case BlockType.UNORDERED_LIST:
+                lines = block.split("\n")
+                temp = []
+                for line in lines:
+                    text = line[2:]
+                    children = text_to_children(text)
+                    temp.append(ParentNode("li", children))
+                NewBlock = ParentNode("ul", temp)
+            case BlockType.ORDERED_LIST:
+                lines = block.split("\n")
+                temp = []
+                for line in lines:
+                    text = line[3:]
+                    children = text_to_children(text)
+                    temp.append(ParentNode("li", children))
+                NewBlock = ParentNode("ol", temp)
+        newblock_list.append(NewBlock)
+    ReturnBlock = ParentNode("div",newblock_list)
+    return ReturnBlock
+                
+def text_to_children(text):
+    children = []
+    md_blocks = markdown_to_blocks(text)
+    for block in md_blocks:
+        textnode = text_to_textnodes(block)
+        for node in textnode:
+            html_node = text_node_to_html_node(node)
+            children.append(html_node)
+    return children
+
+def heading_to_html(block):
+    level = 0
+    for char in block:
+        if char == "#":
+            level += 1
+        else:
+            break
+    if level + 1 >= len(block):
+        raise ValueError(f"Invalid heading: no text content")
+    return level
