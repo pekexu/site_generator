@@ -20,7 +20,7 @@ def copy_src_to_dst(src, dst):
             #print(f"recursing into {os.path.join(src,copy)}")
             copy_src_to_dst(os.path.join(src,copy), os.path.join(dst, copy))
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path}, to {dest_path} using {template_path}")
     file = open(from_path)
     md_content = file.read()
@@ -32,11 +32,13 @@ def generate_page(from_path, template_path, dest_path):
     new_title = extract_title(md_content)
     template = template.replace("{{ Title }}",f"{new_title}" )
     template = template.replace("{{ Content }}",f"{html_string}")
+    template = template.replace(f"href=\"/", f"href=\"{basepath}")
+    template = template.replace(f"src=\"/", f"src=\"{basepath}")
     target = open(os.path.join(dest_path, "index.html"), "x")
     target.write(template)
     target.close()
 
-def generate_pages_recursively(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursively(dir_path_content, template_path, dest_dir_path, basepath):
     contents = os.listdir(dir_path_content)
     dest_path = dest_dir_path
     if not os.path.exists(dest_path):
@@ -46,7 +48,7 @@ def generate_pages_recursively(dir_path_content, template_path, dest_dir_path):
         src_path = os.path.join(dir_path_content, content)
         if os.path.isdir(src_path):
 
-            generate_pages_recursively(src_path, template_path, os.path.join(dest_path, content))
+            generate_pages_recursively(src_path, template_path, os.path.join(dest_path, content), basepath)
         else:
 
-            generate_page(src_path, template_path, dest_dir_path)
+            generate_page(src_path, template_path, dest_dir_path, basepath)
