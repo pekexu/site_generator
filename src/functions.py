@@ -227,16 +227,4 @@ def extract_title(markdown):
     header = re.search(capture_string, markdown)
     return(header[0])
 
-def generate_page(from_path, template_path, dest_path):
-    print(f"Generating page from {from_path}, to {dest_path} using {template_path}")
-    file = open(from_path)
-    md_content = file.read()
-    file2 = open(template_path)
-    template = file2.read()
-    html_string = markdown_to_html_node(md_content).to_html()
-    new_title = extract_title(md_content)
-    
-    template = template.replace("{{ Title }}",f"{new_title}" )
-    template = template.replace("{{ Content }}",f"{html_string}" )
-    target = open(dest_path, "x")
-    target.write(template)
+

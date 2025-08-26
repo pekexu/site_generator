@@ -4,7 +4,7 @@ from functions import *
 # hello world
 
 def main():
-    copy_static_to_public("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    copy_src_to_dst("static", "public")
+    generate_pages_recursively("content", "template.html", "public")
 main()
 
