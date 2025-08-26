@@ -28,8 +28,9 @@ class LeafNode(HTMLNode):
         if self.tag == None:
             return self.value
         #convert tag to html tag:
-        
-        return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+        if not self.tag == "img":
+            return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}>{self.value}"
     
     def __repr__(self):
         return f"LeafNode: tag: {self.tag}, value: {self.value}, children: {self.children}, props: {self.props}"
@@ -47,7 +48,9 @@ class ParentNode(HTMLNode):
         return_string = ""
         for child in self.children:
             return_string = return_string + child.to_html()
-        return f"<{self.tag}{self.props_to_html()}>{return_string}</{self.tag}>"
+        if not self.tag == "img":
+            return f"<{self.tag}{self.props_to_html()}>{return_string}</{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}>{return_string}"
     
     def __repr__(self):
         return f"ParentNode: tag: {self.tag}, value: {self.value}, children: {self.children}, props: {self.props}"

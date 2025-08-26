@@ -431,6 +431,10 @@ the **same** even with inline stuff
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
 
+    def test_extract_title(self):
+        md = "# this is a title"
+        node = extract_title(md)
+        self.assertEqual(node, "this is a title")
 
 
 if __name__ == "__main__":
