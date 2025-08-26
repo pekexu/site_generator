@@ -1,8 +1,8 @@
 from textnode import TextNode, TextType
-
+from file_system_func import *
 # hello world
 
 def main():
-    node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(node)
+    copy_static_to_public("static", "public")
 main()
+
